@@ -45,7 +45,7 @@ The obtained energies are summarized in: result_multi1.dat and result_multi3.dat
 PES.jpg is obtained by: \$ python3 plot.py result_multi1.dat result_multi3.dat<br>
 <br>
 <br>
-To make it easy to read our program code, we also made jupyter-notebook code: spin-flip.ipynb<br>
+To make it easy to read our program code, we also made jupyter-notebook code: spin-flip.ipynb or https://nbviewer.org/github/tsubasa-iino/spin-flip/blob/main/spin-flip.ipynb<br>
 In this notebook, we also checked MO symmetry and attributed each MO to D2h symmetry (Maybe this check can be automated by pyscf).<br>
 <br>
 <br>
