@@ -301,8 +301,8 @@ pes_dict = {}
 
 basis                  = "sto-3g"  #basis set
 charge                 = 0         #total charge for the molecule
-multiplicity           = 3         #spin multiplicity 2S +1 (Select 1 or 3)
-delta_sz_from_hf_state = -1         # select from -2, -1, 0, 1, 2 at the moment
+multiplicity           = 3         #spin multiplicity 2S +1 (1 for singlet, 3 for triplet)
+delta_sz_from_hf_state = -1        # 0 for singlet, -1 for triplet (spin-flip)
 
 for dist in dist_list:
     print(f"\n########################################\n"
@@ -385,19 +385,19 @@ for dist in dist_list:
 
     #hf_state_bin = "0b000000010111"
     singles, doubles = create_excitations(hf_state_bin, delta_sz_from_hf_state)
-    print(f"singles = {singles}\n\ndoubles = {doubles}")
+    print(f"singles ({len(singles)}) = {singles}\n\ndoubles ({len(doubles)}) = {doubles}")
 
     initial_sym = judge_initial_sym(active_orb_sym, hf_state_bin, D2h_table)
     print(f"\ninitial state symmetry = {initial_sym}")
     singles, doubles = judge_D2h_excitation(singles, doubles, active_orb_sym, initial_sym, D2h_table)
-    print(f"Symmetry reduced singles = {singles}\n\nSymmetry reduced doubles = {doubles}")
+    print(f"Symmetry reduced singles ({len(singles)}) = {singles}\n\nSymmetry reduced doubles ({len(doubles)}) = {doubles}")
 
 
 
     def compute_energy(params):  # singles, doubles, state are working as global variables
         #hf_state = create_active_hf_state(np.array([2., 2., 1., 1., 0., 0., 0.]), nele, nqubits)
-        hf_state = create_active_hf_state(np.array([2., 2., 2., 0., 0., 0., 0.]), nele, nqubits)
-        #hf_state = create_active_hf_state(mf.mo_occ, nele, nqubits)        # HF state initialization each time
+        #hf_state = create_active_hf_state(np.array([2., 2., 2., 0., 0., 0., 0.]), nele, nqubits)
+        hf_state = create_active_hf_state(mf.mo_occ, nele, nqubits)        # HF state initialization each time
         circuit = UCCSD_circuit(params, singles=singles, doubles=doubles)  # create quantum cirquit
         circuit.update_quantum_state(hf_state)                             # apply quantum cirquit to state
 
@@ -410,8 +410,9 @@ for dist in dist_list:
     if multiplicity == 1:
         params = np.zeros(len(singles +doubles))
     elif multiplicity == 3:
-        params = np.full(len(singles +doubles), 0.6)
+        params = np.full(len(singles +doubles), 1.0)
         #params = np.random.normal(0, np.pi, len(singles +doubles))
+
     ene_hist.append(compute_energy(params))
 
     method = "BFGS"
