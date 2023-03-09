@@ -69,9 +69,10 @@ for indx, file_name in enumerate(file_names):
     data.set_values(file_name, np.array(dist), np.array(hf_ene), np.array(casci_ene), np.array(vqe_ene))
 
     # plot data of file_name
-    axes.plot(*data.get_plot_values1(file_name), label=file_name +" HF")
-    axes.plot(*data.get_plot_values2(file_name), label=file_name +" CASCI")
-    axes.plot(*data.get_plot_values3(file_name), label=file_name +" VQE")
+    linestyle = "-" if "1" in file_name else "--"
+    axes.plot(*data.get_plot_values1(file_name), label=file_name +" HF", linestyle=linestyle)
+    axes.plot(*data.get_plot_values2(file_name), label=file_name +" CASCI", linestyle=linestyle)
+    axes.plot(*data.get_plot_values3(file_name), label=file_name +" VQE", linestyle=linestyle)
 
 
 ymin = None
@@ -103,13 +104,13 @@ axes.yaxis.set_minor_locator(ticker.AutoMinorLocator(2))
 ########################################################################################################################
 ### See https://www.delftstack.com/ja/howto/matplotlib/python-matplotlib-plot-superscript/ for superscript/subscript ###
 ########################################################################################################################
-axes.set_xlabel(r"Distance (Angstrom)",  fontsize=16)
-axes.set_ylabel(r"Energy (Eh)",          fontsize=16)
+axes.set_xlabel(r"B-H bond distance [Angstrom]",  fontsize=16)
+axes.set_ylabel(r"Energy [Eh]",          fontsize=16)
 
 #################################################################################################
 ### See https://qiita.com/matsui-k20xx/items/291400ed56a39ed63462 for legend position setting ###
 #################################################################################################
 axes.legend(loc="best", borderaxespad=1, fontsize=12, edgecolor="black")
-axes.set_title("PES for BeH2", fontsize=16)
-plt.savefig("PES.jpg", dpi=300)
+axes.set_title("PEC for BeH2", fontsize=16)
+plt.savefig("PEC.jpg", dpi=300)
 plt.show()

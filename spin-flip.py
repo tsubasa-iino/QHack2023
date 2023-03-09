@@ -77,9 +77,10 @@ def kron_N(hf_state_bin):
 
 
 def decode_to_state(eigenvec, threshold=1e-6):
-    bit_vec = np.where(eigenvec > threshold, True, False)
+    bit_vec = np.where(eigenvec >= threshold, True, False)
     digit = 0
     length = len(eigenvec)
+    total_probability = 0.0
     while length != 1:
         digit += 1
         length //= 2
@@ -89,8 +90,11 @@ def decode_to_state(eigenvec, threshold=1e-6):
             op_str = "      +" if op else "|Psi> ="
             config = str(bin(indx))[2:]
             config = "0" *(digit -len(config)) +config
-            print(f"{op_str} {eigenvec[indx]:14.10f} |{config}>")
+            print(f"{op_str} ({eigenvec[indx]:>14.10f}) |{config}>")
             op = True
+            total_probability += eigenvec[indx]**2
+
+    print(f"total probability = {total_probability}")
 
     return None
 
@@ -196,7 +200,7 @@ def add_fermionic_single(param, single, circuit):  # only 1 parameter
 
     cnot_connects = [[i, i+1] for i in range(r, p)]
 
-    # paramの定義がpennylaneと異なる
+    # The definition of param is different from pennylane
     t1_circuit(-param, r, p, "YX", cnot_connects, circuit)  # Eq. (1)
     t1_circuit( param, r, p, "XY", cnot_connects, circuit)  # Eq. (2)
 
@@ -253,7 +257,7 @@ def add_fermionic_double(param, double, circuit):  # only 1 parameter
     cnot_virt = [[i, i+1] for i in range(q, p)]
     cnot_connects = cnot_occ +[[r, q]] +cnot_virt
 
-    # different definition from pennylane, but this is correct
+    # The definition of param is different from pennylane
     t2_circuit(-param/4.0, s, r, q, p, "XXYX", cnot_connects, circuit)  # Eq. (3)
     t2_circuit(-param/4.0, s, r, q, p, "YXYY", cnot_connects, circuit)  # Eq. (4)
     t2_circuit(-param/4.0, s, r, q, p, "XYYY", cnot_connects, circuit)  # Eq. (5)
@@ -299,14 +303,14 @@ dist_list = [1.0, 1.3264, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
 # {dist, [hf_ene, casci[0], vqe_ene, len(ene_hist)]}
 pes_dict = {}
 
-basis                  = "sto-3g"  #basis set
-charge                 = 0         #total charge for the molecule
-multiplicity           = 3         #spin multiplicity 2S +1 (1 for singlet, 3 for triplet)
-delta_sz_from_hf_state = -1        # 0 for singlet, -1 for triplet (spin-flip)
+basis                  = "sto-3g"  # basis set
+charge                 = 0         # total charge for the molecule
+multiplicity           = 1         # spin multiplicity 2S +1 (1 for singlet, 3 for triplet)
+delta_sz_from_hf_state = 0         # select from -2, -1, 0, 1, 2 at the moment: 0 for singlet, -1 for triplet (spin-flip)
 
 for dist in dist_list:
     print(f"\n########################################\n"
-          f"### ditance is now {dist:<8f} angstrom ###\n"
+          f"### distance is now {dist:<8f} angstrom ###\n"
           f"########################################")
 
     if dist <= 1.5:
@@ -380,7 +384,7 @@ for dist in dist_list:
     print("\n\n=== CASCI Result ===\n")
     mycas = mcscf.CASCI(mf, len(active), (nele//2, nele//2))  # alpha=2, beta=2 in 6 spatial orbitals
     casci = mycas.kernel(verbose=False)
-    print(f"casci energy = casci[0]")
+    print(f"CASCI energy = {casci[0]}")
 
 
     #hf_state_bin = "0b000000010111"
@@ -398,8 +402,8 @@ for dist in dist_list:
         #hf_state = create_active_hf_state(np.array([2., 2., 1., 1., 0., 0., 0.]), nele, nqubits)
         #hf_state = create_active_hf_state(np.array([2., 2., 2., 0., 0., 0., 0.]), nele, nqubits)
         hf_state = create_active_hf_state(mf.mo_occ, nele, nqubits)        # HF state initialization each time
-        circuit = UCCSD_circuit(params, singles=singles, doubles=doubles)  # create quantum cirquit
-        circuit.update_quantum_state(hf_state)                             # apply quantum cirquit to state
+        circuit = UCCSD_circuit(params, singles=singles, doubles=doubles)  # create quantum circuit
+        circuit.update_quantum_state(hf_state)                             # apply quantum circuit to state
 
         return qulacs_hamiltonian.get_expectation_value(hf_state)
 
