@@ -43,8 +43,10 @@ The obtained energies are summarized in: result_multi1.dat and result_multi3.dat
 PEC.jpg is obtained by: \$ python3 plot.py result_multi1.dat result_multi3.dat<br>
 <br>
 <br>
-To make it easy to read our program code, we also made jupyter-notebook code: spin-flip.ipynb (https://nbviewer.org/github/tsubasa-iino/spin-flip/blob/main/spin-flip.ipynb)<br>
-In this notebook, we also checked each MO symmetry and attributed it to D2h symmetry (Maybe this check can be automated by pyscf). The generated cube files are stored in ./cmo/ directory.<br>
+To make it easy to read our program code, we also made jupyter-notebook code: spin-flip.ipynb<br>
+In this notebook, we also checked each MO symmetry and attributed it to D2h symmetry (Maybe this check can be automated by pyscf).<br>
+The generated cube files are stored in ./cmo/ directory.<br>
+Note that MO is not displayed in .ipynb file to reduce the file size (ohterwise, the source code is not seen in GitHub).<br>
 <br>
 <br>
 The obtained potential energy curve is shown in: PEC.jpg<br>
